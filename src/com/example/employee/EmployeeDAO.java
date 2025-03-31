@@ -11,10 +11,10 @@ import java.util.List;
 public class EmployeeDAO {
 	
 	public void createEmployeeTable() throws SQLException{
-		String sql="CREATE TABLE employees("
+		String sql="CREATE TABLE IF NOT EXISTS employees("
 				+ "employeeId INT AUTO_INCREMENT PRIMARY KEY,"
-				+ "employeeName VARCHAR(100) NOT NULL"
-				+ "employeeDepartment VARCHAR(100) NOT NULL"
+				+ "employeeName VARCHAR(100) NOT NULL,"
+				+ "employeeDepartment VARCHAR(100) NOT NULL,"
 				+ "employeeSalary DECIMAL(10,2))";
 		
 		try(Connection conn=EmployeeDBConn.getConnection();
@@ -60,14 +60,16 @@ public class EmployeeDAO {
 			    preparedStatement.setString(1, emp.getEmployeeName());
 			    preparedStatement.setString(2, emp.getEmployeeDepartment());
 			    preparedStatement.setDouble(3, emp.getEmployeeSalary());
-			    preparedStatement.setInt(1, emp.getEmployeeId());
+			    preparedStatement.setInt(4, emp.getEmployeeId());
+			    preparedStatement.executeUpdate();
 		}
 	}
 	public void deleteEmployee(int id) throws SQLException{
-		String sql="DELETE FROM employees WHERE id=?";
+		String sql="DELETE FROM employees WHERE employeeId=?";
 		try(Connection conn=EmployeeDBConn.getConnection();
 				PreparedStatement preparedStatement=conn.prepareStatement(sql)){
 			    preparedStatement.setInt(1, id);
+			    preparedStatement.executeUpdate();
 		}
 		
 	}

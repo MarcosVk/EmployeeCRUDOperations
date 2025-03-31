@@ -2,48 +2,98 @@ package com.example.employee;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Scanner;
 
 public class EmployeeApp {
-
+	private static Scanner scanner=new Scanner(System.in);
+	private static EmployeeService employeeService=new EmployeeService();
 	public static void main(String[] args) throws SQLException{
 		// TODO Auto-generated method stub
-		EmployeeDAO employeeDAO=new EmployeeDAO();
+		employeeService.createEmployeeTable();
+		showOptions();
+		}
+	public static void showOptions() throws SQLException{
 		
-		employeeDAO.createEmployeeTable();
-		Employee employee1=new Employee("Vicky", "Dev", 100000.00);
-		Employee employee2=new Employee("Jim", "QA", 70000.00);
+		while(true) {
+			System.out.println("1) Add Employees");
+			System.out.println("2) Update Employees");
+			System.out.println("3) Delete Employees");
+			System.out.println("4) List all Employees");
+			System.out.println("5) Exit");
+			System.out.print("Enter your choice : ");
+			
+			int option=scanner.nextInt();
+			scanner.nextLine();
+			switch(option) {
+			case 1: addEmployee();
+					break;
+			case 2: updateEmployee();
+					break;
+			case 3: deleteEmployee();
+					break;
+			case 4: listAllEmployee();
+					break;
+			case 5: System.out.println("Exiting...");			
+					return;
+			default:
+					System.out.println("Invalid option");
+			}
+		}
+	}
+	public static void addEmployee() throws SQLException{
+		System.out.println("Adding new Employee");
+		System.out.print("Enter employee name : ");
+		String name=scanner.nextLine();
 		
-		employeeDAO.addEmployee(employee1);
-		employeeDAO.addEmployee(employee2);
+		System.out.print("Enter employee department : ");
+		String department=scanner.nextLine();
 		
-		printAllEmployees(employeeDAO);
+		System.out.print("Enter employee salary : ");
+		double salary=scanner.nextDouble();
+		scanner.nextLine();
 		
-		List<Employee> employees=employeeDAO.getAllEmployees();
-		Employee update=employees.get(0);
-		update.setEmployeeSalary(200000.00);
-		employeeDAO.updateEmployee(update);
+		employeeService.addEmployee(name, department, salary);
+		System.out.println("Employee added successfully");
+	}
+	public static void updateEmployee() throws SQLException{
+		listAllEmployee();
+		System.out.println("Enter emplloyeeID to update : ");
+		int id=scanner.nextInt();
+		scanner.nextLine();
 		
-		printAllEmployees(employeeDAO);
+		System.out.print("Enter employee name to update : ");
+		String name=scanner.nextLine();
 		
-		employeeDAO.deleteEmployee(employee2.getEmployeeId());
+		System.out.print("Enter employee department to update : ");
+		String department=scanner.nextLine();
 		
-		printAllEmployees(employeeDAO);
+		System.out.print("Enter employee salary to update : ");
+		double salary=scanner.nextDouble();
+		scanner.nextLine();
+		
+		employeeService.updateEmployee(id, name, department, salary);
+		System.out.println("Employee updated successfully");
 	}
 	
-	public static void printAllEmployees(EmployeeDAO dao) throws SQLException{
-		List<Employee> employees=dao.getAllEmployees();	
-		System.out.println("[");
-	    for (int i = 0; i < employees.size(); i++) {
-	        Employee emp = employees.get(i);
-	        System.out.println("  {");
-	        System.out.println("    \"id\": " + emp.getEmployeeId() + ",");
-	        System.out.println("    \"name\": \"" + emp.getEmployeeName() + "\",");
-	        System.out.println("    \"department\": \"" + emp.getEmployeeDepartment() + "\",");
-	        System.out.println("    \"salary\": " + emp.getEmployeeSalary());
-	        System.out.print("  }");
-	        System.out.println(i < employees.size() - 1 ? "," : "");
-	    }
-	    System.out.println("]");
+	public static void deleteEmployee() throws SQLException{
+		listAllEmployee();
+		System.out.print("Enter employeeID to update : ");
+		int id=scanner.nextInt();
+		scanner.nextLine();
+		employeeService.deleteEmployee(id);
+		System.out.println("Employee deleted successfully");
+	}
+	public static void listAllEmployee() throws SQLException{
+		List<Employee> employee=employeeService.getAllEmployees();
+		System.out.println("Employee List : ");
+		for(Employee emp:employee) {
+			System.out.printf("ID : %d, Name : %s, Department : %s, Salary : %.2f%n",
+			emp.getEmployeeId(),
+			emp.getEmployeeName(),
+			emp.getEmployeeDepartment(),
+			emp.getEmployeeSalary()
+			);
 		}
-
+		
+	}
 }

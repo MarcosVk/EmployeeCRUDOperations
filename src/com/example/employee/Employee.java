@@ -2,7 +2,7 @@ package com.example.employee;
 
 public class Employee {
 	
-	private int employyeId;
+	private int employeeId;
 	private String employeeName;
 	private String employeeDepartment;
 	private double employeeSalary;
@@ -13,15 +13,15 @@ public class Employee {
 		this.employeeSalary=employeeSalary;
 	}
 	
-	public Employee(int employyeId,String employeeName,String employeeDepartment,double employeeSalary) {
-		this.employyeId=employyeId;
+	public Employee(int employeeId,String employeeName,String employeeDepartment,double employeeSalary) {
+		this.employeeId=employeeId;
 		this.employeeName=employeeName;
 		this.employeeDepartment=employeeDepartment;
 		this.employeeSalary=employeeSalary;
 	}
 	
 	public int getEmployeeId() {
-		return employyeId;
+		return employeeId;
 	}
 	public String getEmployeeName() {
 		return employeeName;
@@ -33,8 +33,8 @@ public class Employee {
 		return employeeSalary;
 	}
 	
-	public void setEmployeeId(int employyeId) {
-		this.employyeId=employyeId;
+	public void setEmployeeId(int employeeId) {
+		this.employeeId=employeeId;
 	}
 	public void setEmployeeName(String employeeName) {
 		this.employeeName=employeeName;
