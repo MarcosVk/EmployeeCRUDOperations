@@ -10,7 +10,7 @@ import java.util.List;
 
 public class EmployeeDAO {
 	
-	public void createEmployeeTable() throws SQLException{
+	public void createEmployeeTableDB() throws SQLException{
 		String sql="CREATE TABLE IF NOT EXISTS employees("
 				+ "employeeId INT AUTO_INCREMENT PRIMARY KEY,"
 				+ "employeeName VARCHAR(100) NOT NULL,"
@@ -22,17 +22,27 @@ public class EmployeeDAO {
 			statement.execute(sql);			
 		}
 	}
-	public void addEmployee(Employee emp) throws SQLException{
+	public int addEmployeeDB(Employee emp) throws SQLException{
 		String sql="INSERT INTO employees(employeeName,employeeDepartment,employeeSalary) VALUES (?,?,?)";
 		try(Connection conn=EmployeeDBConn.getConnection();
-				PreparedStatement preparedStatement=conn.prepareStatement(sql)){
+				PreparedStatement preparedStatement=conn.prepareStatement(sql,Statement.RETURN_GENERATED_KEYS)){
 			preparedStatement.setString(1,emp.getEmployeeName());
 			preparedStatement.setString(2,emp.getEmployeeDepartment());
 			preparedStatement.setDouble(3, emp.getEmployeeSalary());
-			preparedStatement.executeUpdate();		
+			int affectedRows=preparedStatement.executeUpdate();	
+			if(affectedRows>0) {
+				try(ResultSet generatedKeys=preparedStatement.getGeneratedKeys()){
+					if(generatedKeys.next()) {
+						int employeeId=generatedKeys.getInt(1);
+						return employeeId;
+					}
+				}
+			}
+			 throw new SQLException("Insertion failed, no ID obtained.");
+			
 		}
 	}
-	public List<Employee> getAllEmployees() throws SQLException{
+	public List<Employee> getAllEmployeesDB() throws SQLException{
 		List<Employee> employees=new ArrayList<Employee>();
 		String sql="SELECT employeeId,employeeName,employeeDepartment,employeeSalary FROM employees";
 		
@@ -52,7 +62,7 @@ public class EmployeeDAO {
 		}
 	}
 	
-	public void updateEmployee(Employee emp) throws SQLException{
+	public void updateEmployeeDB(Employee emp) throws SQLException{
 		String sql="UPDATE employees SET employeeName=?,employeeDepartment=?,employeeSalary=? WHERE employeeId=?";
 		
 		try(Connection conn=EmployeeDBConn.getConnection();
@@ -64,14 +74,36 @@ public class EmployeeDAO {
 			    preparedStatement.executeUpdate();
 		}
 	}
-	public void deleteEmployee(int id) throws SQLException{
+	public void deleteEmployeeDB(int id) throws SQLException{
 		String sql="DELETE FROM employees WHERE employeeId=?";
 		try(Connection conn=EmployeeDBConn.getConnection();
 				PreparedStatement preparedStatement=conn.prepareStatement(sql)){
 			    preparedStatement.setInt(1, id);
 			    preparedStatement.executeUpdate();
 		}
+	}
+	public static Employee getEmployeeByIDDB(int id) throws SQLException{
+		String sql="SELECT employeeId,employeeName,employeeDepartment,employeeSalary FROM employees WHERE employeeId=?";
 		
+		try(Connection conn=EmployeeDBConn.getConnection();
+				PreparedStatement preparedStatement=conn.prepareStatement(sql);){
+			preparedStatement.setInt(1, id);
+			try (ResultSet resultSet=preparedStatement.executeQuery();){
+				if(resultSet.next()) {
+					return new Employee(
+							resultSet.getInt("employeeId"),
+							resultSet.getString("employeeName"),
+							resultSet.getString("employeeDepartment"),
+							resultSet.getDouble("employeeSalary")
+							);
+				}
+				return null;
+				
+			}
+			
+			
+			
+		}
 	}
 	
 	

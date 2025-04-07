@@ -17,7 +17,7 @@ public class EmployeeDBConn {
 	public static Connection getConnection() throws SQLException{
 		String connURL="jdbc:mysql://localhost:3306/employee?useSSL=false";
 		String userName = "root";
-	    String password = "Vicky@123";
+	    String password = "Vviiggnneesshh@0";
 		return DriverManager.getConnection(connURL, userName, password);
 	}
 
